@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	b.Greetings()
+	b.Day1()
 }

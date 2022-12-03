@@ -15,70 +15,52 @@ func Day3() {
 	elvesData := strings.Split(day3Content, "\n")
 	firstSum := 0
 	for _, elfData := range elvesData {
-		firstCompartment := elfData[:len(elfData)/2]
-		secondCompartment := elfData[len(elfData)/2:]
-		common := findCommon(firstCompartment, secondCompartment)
-		firstSum += priority(common)
+		common := findCommon(elfData[:len(elfData)/2], elfData[len(elfData)/2:])
+		firstSum += priority(common[0])
 	}
 	i := 0
 	secondSum := 0
 	for i < len(elvesData) {
 		commons := elvesData[i]
-		rucksacks := [3]string{elvesData[i], elvesData[i+1], elvesData[i+2]}
+		rucksacks := [2]string{elvesData[i+1], elvesData[i+2]}
 		for _, rucksack := range rucksacks {
-			common := findCommons(rucksack, commons)
-			commons = strings.Join(common, "")
+			commons = strings.Join(findCommons(rucksack, commons), "")
 		}
-		secondSum += priority(commons)
+		secondSum += priority(commons[0])
 		i += 3
 	}
 	fmt.Println(firstSum)
 	fmt.Println(secondSum)
 }
 
-func priority(common string) int {
-	for i, comm := range common {
-		if i == 0 {
-			if strings.ToUpper(string(comm)) == common {
-				return int(comm - 65 + 27)
-			} else {
-				return int(comm - 97 + 1)
-			}
-		}
+func priority(common uint8) int {
+	if strings.ToUpper(string(common)) == string(common) {
+		return int(common - 65 + 27)
+	} else {
+		return int(common - 97 + 1)
 	}
-	return 0
 }
 
 func findCommon(firstCompartment string, secondCompartment string) string {
-	for _, first := range firstCompartment {
-		for _, second := range secondCompartment {
-			if second == first {
-				return string(first)
-			}
-		}
+	inter := findCommons(firstCompartment, secondCompartment)
+	if len(inter) != 0 {
+		return inter[0]
 	}
 	return ""
 }
 
 func findCommons(rucksack string, commons string) (inter []string) {
-	ruckSackSlice := strings.Split(rucksack, ",")
-	commonsSlice := strings.Split(commons, ",")
-	m := make(map[string]bool)
+	m := make(map[uint8]bool)
 
-	for _, item := range commonsSlice {
-		for _, char := range item {
-			m[string(char)] = true
-		}
+	for i := 0; i < len(commons); i++ {
+		m[commons[i]] = true
 	}
 
-	for _, item := range ruckSackSlice {
-		for _, char := range item {
-			charString := string(char)
-			if _, ok := m[charString]; ok && !contains(inter, charString) {
-				inter = append(inter, charString)
-			}
+	for j := 0; j < len(rucksack); j++ {
+		charString := rucksack[j]
+		if m[charString] && !contains(inter, string(charString)) {
+			inter = append(inter, string(charString))
 		}
-
 	}
 	return
 }

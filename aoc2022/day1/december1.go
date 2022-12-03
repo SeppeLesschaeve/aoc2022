@@ -14,14 +14,10 @@ type Elf struct {
 }
 
 func Day1() {
-	content, err := os.ReadFile("day1.txt")
-	if err != nil {
-		panic(err)
-	}
+	content, _ := os.ReadFile("day1.txt")
 	day1Content := string(content)
 	elvesData := strings.Split(day1Content, "\n\n")
 	var cals []Elf
-	max := 0
 	for elf, elfData := range elvesData {
 		elfData := strings.Split(elfData, "\n")
 		sum := 0
@@ -32,16 +28,13 @@ func Day1() {
 			}
 		}
 		cals = append(cals, Elf{strconv.Itoa(elf), sum})
-		if sum > max {
-			max = sum
-		}
 	}
 	sort.Slice(cals, func(p, q int) bool {
 		return cals[p].Cal > cals[q].Cal
 	})
 	threeCals := cals[:3]
 	sumArray := sum(threeCals)
-	fmt.Println(max)
+	fmt.Println(cals[0].Cal)
 	fmt.Println(sumArray)
 }
 

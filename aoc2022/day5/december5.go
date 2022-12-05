@@ -3,7 +3,6 @@ package day5
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -13,15 +12,15 @@ func Day5() {
 	configAndSteps := strings.Split(day5Content, "\n\n")
 	configPart1 := getConfig(configAndSteps[0])
 	configPart2 := getConfig(configAndSteps[0])
-	steps1 := getSteps(configAndSteps[1])
-	steps2 := getSteps(configAndSteps[1])
-	for _, step := range steps1 {
-		for step[0] > 0 {
+	steps := getSteps(configAndSteps[1])
+	for _, step := range steps {
+		amount := step[0]
+		for amount > 0 {
 			changeConfigSingle(configPart1, step[1], step[2])
-			step[0] -= 1
+			amount -= 1
 		}
 	}
-	for _, step := range steps2 {
+	for _, step := range steps {
 		changeConfigMultiple(configPart2, step[0], step[1], step[2])
 	}
 	fmt.Println(getTop(configPart1))
@@ -83,27 +82,25 @@ func getConfig(configString string) [][]string {
 	lines := strings.Split(configString, "\n")
 	amountOfStacks := getAmountOfStacks(lines[len(lines)-1])
 	config := make([][]string, amountOfStacks)
-	i := len(lines) - 2
-	for i >= 0 {
+	i := 0
+	for i <= len(lines)-2 {
 		line := getLine(lines[i])
 		l := 0
 		for l < len(line) {
 			crate := line[l]
 			if crate != "" {
-				config[l] = append([]string{crate}, config[l]...)
+				config[l] = append(config[l], crate)
 			}
 			l += 1
 		}
-		i -= 1
+		i += 1
 	}
 	return config
 }
 
 func getStep(stepString string) []int {
-	stepSplit := strings.Split(stepString, " ")
-	amount, _ := strconv.Atoi(stepSplit[1])
-	from, _ := strconv.Atoi(stepSplit[3])
-	to, _ := strconv.Atoi(stepSplit[5])
+	var amount, from, to int
+	_, _ = fmt.Sscanf(stepString, "move %d from %d to %d", &amount, &from, &to)
 	return []int{amount, from - 1, to - 1}
 }
 
@@ -119,14 +116,28 @@ func getSteps(stepsString string) [][]int {
 	return steps
 }
 
+func pop(stack []string, amount int) ([]string, []string) {
+	if len(stack) < amount {
+		panic("stack is empty")
+	}
+	var popped []string
+	amountToPop := 0
+	for amountToPop < amount {
+		popped = append(popped, stack[amountToPop])
+		amountToPop += 1
+	}
+	stack = stack[amount:]
+	return popped, stack
+}
+
 func changeConfigSingle(config [][]string, from int, to int) {
-	headFrom := config[from][0]
-	config[from] = config[from][1:]
-	config[to] = append([]string{headFrom}, config[to]...)
+	var headFrom []string
+	headFrom, config[from] = pop(config[from], 1)
+	config[to] = append(headFrom, config[to]...)
 }
 
 func changeConfigMultiple(config [][]string, amount int, from int, to int) {
-	headFrom := config[from][:amount]
-	config[from] = config[from][amount:]
+	var headFrom []string
+	headFrom, config[from] = pop(config[from], amount)
 	config[to] = append(headFrom, config[to]...)
 }

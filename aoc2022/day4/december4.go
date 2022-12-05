@@ -17,10 +17,14 @@ func Day4() {
 		sections := strings.Split(elfData, ",")
 		section1 := strings.Split(sections[0], "-")
 		section2 := strings.Split(sections[1], "-")
-		if doesOverlapFully(section1, section2) {
+		section1First, _ := strconv.Atoi(section1[0])
+		section1Second, _ := strconv.Atoi(section1[1])
+		section2First, _ := strconv.Atoi(section2[0])
+		section2Second, _ := strconv.Atoi(section2[1])
+		if doesOverlapFully(section1First, section1Second, section2First, section2Second) {
 			sumPart1 += 1
 		}
-		if doesOverlap(section1, section2) {
+		if doesOverlap(section1First, section1Second, section2First, section2Second) {
 			sumPart2 += 1
 		}
 	}
@@ -28,30 +32,11 @@ func Day4() {
 	fmt.Println(sumPart2)
 }
 
-func doesOverlapFully(section1 []string, section2 []string) bool {
-	section1First, _ := strconv.Atoi(section1[0])
-	section1Second, _ := strconv.Atoi(section1[1])
-	section2First, _ := strconv.Atoi(section2[0])
-	section2Second, _ := strconv.Atoi(section2[1])
-	if section1First <= section2First && section2Second <= section1Second {
-		return true
-	} else if section2First <= section1First && section1Second <= section2Second {
-		return true
-	} else {
-		return false
-	}
+func doesOverlapFully(section1First int, section1Second int, section2First int, section2Second int) bool {
+	return (section1First <= section2First && section2Second <= section1Second) ||
+		(section2First <= section1First && section1Second <= section2Second)
 }
 
-func doesOverlap(section1 []string, section2 []string) bool {
-	section1First, _ := strconv.Atoi(section1[0])
-	section1Second, _ := strconv.Atoi(section1[1])
-	section2First, _ := strconv.Atoi(section2[0])
-	section2Second, _ := strconv.Atoi(section2[1])
-	if section1First <= section2Second && section2First <= section1Second {
-		return true
-	} else if section2First <= section1Second && section1First <= section2Second {
-		return true
-	} else {
-		return false
-	}
+func doesOverlap(section1First int, section1Second int, section2First int, section2Second int) bool {
+	return section2First <= section1Second && section1First <= section2Second
 }

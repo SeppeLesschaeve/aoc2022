@@ -33,33 +33,19 @@ func getTop(config [][]string) string {
 	return strings.Join(top, "")
 }
 
-func getLine(line string) []string {
-	var stacks []string
-	for len(line) > 0 {
-		if len(line) >= 4 {
-			stack := line[:4]
-			if stack == "    " {
-				stacks = append(stacks, "")
-			} else {
-				stacks = append(stacks, string(stack[1]))
-			}
-			line = line[4:]
-		} else {
-			stacks = append(stacks, string(line[1]))
-			break
-		}
-	}
-	return stacks
-}
-
 func getConfig(configString string) [][]string {
 	lines := strings.Split(configString, "\n")
 	config := make([][]string, len(strings.Fields(lines[len(lines)-1])))
 	for i := 0; i <= len(lines)-2; i++ {
-		line := getLine(lines[i])
-		for l, crate := range line {
-			if crate != "" {
-				config[l] = append(config[l], crate)
+		for l := 0; len(lines[i]) > 0; l++ {
+			if len(lines[i]) >= 4 {
+				if lines[i][:4] != "    " {
+					config[l] = append(config[l], string(lines[i][1]))
+				}
+				lines[i] = lines[i][4:]
+			} else {
+				config[l] = append(config[l], string(lines[i][1]))
+				break
 			}
 		}
 	}

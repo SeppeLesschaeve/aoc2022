@@ -1,12 +1,12 @@
 package main
 
 import (
-	d5 "aoc2022/day5"
+	d6 "aoc2022/day6"
 	"fmt"
 )
 
 func main() {
 
-	fmt.Println("December 5")
-	d5.Day5()
+	fmt.Println("December 6")
+	d6.Day6()
 }

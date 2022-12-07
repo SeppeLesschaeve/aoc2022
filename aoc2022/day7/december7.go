@@ -56,26 +56,21 @@ func getSizes(dir Entity) []int {
 		sizes = append(sizes, dir.GetSize())
 	}
 	for _, entityStar := range dir.subEntities {
-		entity := *entityStar
-		if entity.Type == "Dir" {
-			sizes = append(sizes, getSizes(entity)...)
+		if (*entityStar).Type == "Dir" {
+			sizes = append(sizes, getSizes(*entityStar)...)
 		}
 	}
 	return sizes
 }
 
 func constructTree(lines []string) Entity {
-	var tree Entity
-	var curr Entity
+	currDirs := []*Entity{{strings.Split(lines[0], " ")[2], "Dir", 0, []*Entity{}}}
+	tree := *currDirs[0]
 	var indices []int
-	var currDirs []Entity
-	for i := 0; i < len(lines); {
+	for i := 1; i < len(lines); {
 		if lines[i] == "$ cd .." {
 			currDirs = currDirs[1:]
-			if len(currDirs) != 0 {
-				curr = currDirs[0]
-			}
-			newIndex := getIndexOfFirstDirAfterIndex(indices[len(indices)-1], curr)
+			newIndex := getIndexOfFirstDirAfterIndex(indices[len(indices)-1], *currDirs[0])
 			if newIndex == -1 {
 				indices = indices[:len(indices)-1]
 			} else {
@@ -83,22 +78,16 @@ func constructTree(lines []string) Entity {
 			}
 			i++
 		} else if lines[i][:4] == "$ cd" {
-			curr = Entity{strings.Split(lines[i], " ")[2], "Dir", 0, []*Entity{}}
-			currDirs = append([]Entity{curr}, currDirs...)
-			if indices == nil {
-				tree = curr
-			}
+			currDirs = append([]*Entity{{strings.Split(lines[i], " ")[2], "Dir", 0, []*Entity{}}}, currDirs...)
 			i++
 		} else if lines[i][:4] == "$ ls" {
-			entities := getEntities(lines[i+1:])
-			curr.extend(entities, nil)
-			currDirs[0] = curr
-			tree.extend(curr.subEntities, indices)
-			index := getIndexOfFirstDirAfterIndex(-1, curr)
+			currDirs[0].extend(getEntities(lines[i+1:]), nil)
+			tree.extend(currDirs[0].subEntities, indices)
+			index := getIndexOfFirstDirAfterIndex(-1, *currDirs[0])
 			if index != -1 {
 				indices = append(indices, index)
 			}
-			i += len(entities) + 1
+			i += len(currDirs[0].subEntities) + 1
 		}
 	}
 	return tree
@@ -106,8 +95,7 @@ func constructTree(lines []string) Entity {
 
 func getIndexOfFirstDirAfterIndex(index int, curr Entity) int {
 	for i, entityStar := range curr.subEntities {
-		entity := *entityStar
-		if entity.Type == "Dir" && i > index {
+		if (*entityStar).Type == "Dir" && i > index {
 			return i
 		}
 	}
@@ -121,14 +109,12 @@ func getEntities(lines []string) []*Entity {
 			break
 		} else {
 			entitySplit := strings.Split(line, " ")
-			var entity Entity
 			if string(entitySplit[0]) == "dir" {
-				entity = Entity{name: entitySplit[1], Type: "Dir", Size: 0, subEntities: []*Entity{}}
+				entities = append(entities, &Entity{name: entitySplit[1], Type: "Dir", Size: 0, subEntities: []*Entity{}})
 			} else {
 				size, _ := strconv.Atoi(entitySplit[0])
-				entity = Entity{name: entitySplit[1], Type: "File", Size: size, subEntities: nil}
+				entities = append(entities, &Entity{name: entitySplit[1], Type: "File", Size: size, subEntities: nil})
 			}
-			entities = append(entities, &entity)
 		}
 	}
 	return entities

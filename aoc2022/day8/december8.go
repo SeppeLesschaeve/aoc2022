@@ -18,119 +18,57 @@ func Day8() {
 			treeHeights[i] = append(treeHeights[i], treeHeight)
 		}
 	}
-	firstPartAmount := calculateVisible(treeHeights)
-	secondPartAmount := calculateHighestScenic(treeHeights)
+	firstPartAmount, secondPartAmount := calculateVisibleAndHighestScenic(treeHeights)
 	fmt.Println(firstPartAmount)
 	fmt.Println(secondPartAmount)
 }
 
-func calculateVisible(heights [][]int) int {
+func calculateVisibleAndHighestScenic(heights [][]int) (int, int) {
 	sum := 0
-	for i, row := range heights {
-		for j, height := range row {
-			if isVisibleRow(height, i, j, heights) || isVisibleColumn(height, i, j, heights) {
-				sum += 1
-			}
-		}
-	}
-	return sum
-}
-
-func calculateHighestScenic(heights [][]int) int {
 	max := 0
 	for i, row := range heights {
 		for j, height := range row {
-			_, left := leftViewable(height, i, j, heights)
-			_, right := rightViewable(height, i, j, heights)
-			_, top := topViewable(height, i, j, heights)
-			_, bottom := bottomViewable(height, i, j, heights)
-			scenic := left * right * top * bottom
+			var leftDir []int
+			for jCol := j - 1; jCol >= 0; jCol-- {
+				leftDir = append(leftDir, heights[i][jCol])
+			}
+			var rightDir []int
+			for jCol := j + 1; jCol <= len(row)-1; jCol++ {
+				rightDir = append(rightDir, heights[i][jCol])
+			}
+			var topDir []int
+			for iRow := i - 1; iRow >= 0; iRow-- {
+				topDir = append(topDir, heights[iRow][j])
+			}
+			var bottomDir []int
+			for iRow := i + 1; iRow <= len(heights)-1; iRow++ {
+				bottomDir = append(bottomDir, heights[iRow][j])
+			}
+			isVisibleLeft, leftViewable := viewableInDirection(height, leftDir)
+			isVisibleRight, rightViewable := viewableInDirection(height, rightDir)
+			isVisibleTop, topViewable := viewableInDirection(height, topDir)
+			isVisibleBottom, bottomViewable := viewableInDirection(height, bottomDir)
+			if isVisibleLeft || isVisibleRight || isVisibleTop || isVisibleBottom {
+				sum += 1
+			}
+			scenic := leftViewable * rightViewable * topViewable * bottomViewable
 			if scenic > max {
 				max = scenic
 			}
 		}
 	}
-	return max
+	return sum, max
 }
 
-func isVisibleRow(height int, i int, j int, heights [][]int) bool {
-	left, _ := leftViewable(height, i, j, heights)
-	right, _ := rightViewable(height, i, j, heights)
-	return left || right
-}
-
-func isVisibleColumn(height int, i int, j int, heights [][]int) bool {
-	top, _ := topViewable(height, i, j, heights)
-	bottom, _ := bottomViewable(height, i, j, heights)
-	return top || bottom
-}
-
-func leftViewable(height int, i int, j int, heights [][]int) (bool, int) {
-	leftViewable := 0
-	isVisibleLeft := true
-	for iRow, row := range heights {
-		if i == iRow {
-			for jCol := j-1; jCol >= 0; jCol-- {
-				if row[jCol] < height {
-					leftViewable += 1
-				} else {
-					leftViewable += 1
-					isVisibleLeft = false
-					break
-				}
-			}
+func viewableInDirection(height int, heights []int) (bool, int) {
+	viewable := 0
+	isVisible := true
+	for _, h := range heights {
+		viewable += 1
+		if h >= height {
+			isVisible = false
 			break
 		}
 	}
-	return isVisibleLeft, leftViewable
-}
-
-func rightViewable(height int, i int, j int, heights [][]int) (bool, int) {
-	rightViewable := 0
-	isVisibleRight := true
-	for iRow, row := range heights {
-		if i == iRow {
-			for jCol := j+1; jCol <= len(row) - 1; jCol++ {
-				if row[jCol] < height {
-					rightViewable += 1
-				} else {
-					rightViewable += 1
-					isVisibleRight = false
-					break
-				}
-			}
-			break
-		}
-	}
-	return isVisibleRight, rightViewable
-}
-
-func topViewable(height int, i int, j int, heights [][]int) (bool, int) {
-	topViewable := 0
-	isVisibleTop := true
-	for iRow := i-1; iRow >= 0; iRow-- {
-		if heights[iRow][j] < height {
-			topViewable += 1
-		} else {
-			topViewable += 1
-			isVisibleTop = false
-			break
-		}
-	}
-	return isVisibleTop, topViewable
-}
-
-func bottomViewable(height int, i int, j int, heights [][]int) (bool, int) {
-	bottomViewable := 0
-	isBottomVisible := true
-	for iRow := i+1; iRow <= len(heights) - 1; iRow++ {
-		if heights[iRow][j] < height {
-			bottomViewable += 1
-		} else {
-			bottomViewable += 1
-			isBottomVisible = false
-			break
-		}
-	}
-	return isBottomVisible, bottomViewable
+	return isVisible, viewable
 }

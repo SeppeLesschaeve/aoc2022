@@ -8,8 +8,8 @@ import (
 )
 
 type Action struct {
-	dir    string
-	amount int
+	direction string
+	distance  int
 }
 
 type Position struct {
@@ -21,11 +21,11 @@ func Day9() {
 	content, _ := os.ReadFile("day9.txt")
 	day9Content := string(content)
 	actions := getActions(day9Content)
-	firstPartTail := []Position{{0, 0}}
-	secondPartTail := []Position{{0, 0}, {0, 0}, {0, 0},
+	firstPartKnots := []Position{{0, 0}, {0, 0}}
+	secondPartKnots := []Position{{0, 0}, {0, 0}, {0, 0}, {0, 0},
 		{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}}
-	firstPartVisited := followActions(actions, firstPartTail)
-	secondPartVisited := followActions(actions, secondPartTail)
+	firstPartVisited := followActions(actions, firstPartKnots)
+	secondPartVisited := followActions(actions, secondPartKnots)
 	fmt.Println(firstPartVisited)
 	fmt.Println(secondPartVisited)
 }
@@ -35,30 +35,25 @@ func getActions(content string) []Action {
 	actions := make([]Action, len(lines))
 	for i, line := range lines {
 		action := strings.Split(line, " ")
-		amount, _ := strconv.Atoi(action[1])
-		actions[i] = Action{action[0], amount}
+		distance, _ := strconv.Atoi(action[1])
+		actions[i] = Action{action[0], distance}
 	}
 	return actions
 }
 
-func followActions(actions []Action, tail []Position) interface{} {
-	head := Position{0, 0}
-	tailVisited := []Position{tail[len(tail)-1]}
+func followActions(actions []Action, knots []Position) interface{} {
+	tailVisited := []Position{knots[len(knots)-1]}
 	for _, action := range actions {
-		for i := 0; i < action.amount; i++ {
-			head = moveHead(head, action.dir)
-			tail[0] = moveTail(head, tail[0])
-			for t := 1; t < len(tail); t++ {
-				tail[t] = moveTail(tail[t-1], tail[t])
-				if t == len(tail)-1 {
-					if isNewTailPos(tail[t], tailVisited) {
-						tailVisited = append(tailVisited, tail[t])
+		for i := 0; i < action.distance; i++ {
+			knots[0] = moveHead(knots[0], action.direction)
+			for t := 1; t < len(knots); t++ {
+				if abs(knots[t-1].x-knots[t].x) > 1 || abs(knots[t-1].y-knots[t].y) > 1 {
+					knots[t] = moveTail(knots[t-1], knots[t])
+					if t == len(knots)-1 {
+						if isNewTailPos(knots[t], tailVisited) {
+							tailVisited = append(tailVisited, knots[t])
+						}
 					}
-				}
-			}
-			if len(tail) == 1 {
-				if isNewTailPos(tail[0], tailVisited) {
-					tailVisited = append(tailVisited, tail[0])
 				}
 			}
 		}
@@ -89,23 +84,17 @@ func moveHead(pos Position, dir string) Position {
 }
 
 func moveTail(head Position, tail Position) Position {
-	deltaX := head.x - tail.x
-	deltaY := head.y - tail.y
-
-	if abs(deltaX) > 1 || abs(deltaY) > 1 {
-		return Position{tail.x + sign(deltaX), tail.y + sign(deltaY)}
-	}
-	return tail
+	return Position{newCoordinate(tail.x, head.x), newCoordinate(tail.y, head.y)}
 }
 
-func sign(x int) int {
-	if x < 0 {
-		return -1
+func newCoordinate(tailCoordinate int, headCoordinate int) int {
+	if headCoordinate-tailCoordinate > 0 {
+		return tailCoordinate + 1
+	} else if headCoordinate-tailCoordinate == 0 {
+		return tailCoordinate
+	} else {
+		return tailCoordinate - 1
 	}
-	if x == 0 {
-		return 0
-	}
-	return 1
 }
 
 func abs(i int) int {

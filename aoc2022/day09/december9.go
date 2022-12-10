@@ -1,4 +1,4 @@
-package day9
+package day09
 
 import (
 	"fmt"
@@ -7,18 +7,21 @@ import (
 	"strings"
 )
 
+type Void struct{}
+
+var void Void
+
 type Action struct {
 	direction string
 	distance  int
 }
-
 type Position struct {
 	x int
 	y int
 }
 
 func Day9() {
-	content, _ := os.ReadFile("day9.txt")
+	content, _ := os.ReadFile("day09.txt")
 	day9Content := string(content)
 	actions := getActions(day9Content)
 	firstPartKnots := []Position{{0, 0}, {0, 0}}
@@ -42,7 +45,8 @@ func getActions(content string) []Action {
 }
 
 func followActions(actions []Action, knots []Position) interface{} {
-	tailVisited := []Position{knots[len(knots)-1]}
+	tailVisited := make(map[Position]Void)
+	tailVisited[knots[len(knots)-1]] = void
 	for _, action := range actions {
 		for i := 0; i < action.distance; i++ {
 			knots[0] = moveHead(knots[0], action.direction)
@@ -50,24 +54,13 @@ func followActions(actions []Action, knots []Position) interface{} {
 				if abs(knots[t-1].x-knots[t].x) > 1 || abs(knots[t-1].y-knots[t].y) > 1 {
 					knots[t] = moveTail(knots[t-1], knots[t])
 					if t == len(knots)-1 {
-						if isNewTailPos(knots[t], tailVisited) {
-							tailVisited = append(tailVisited, knots[t])
-						}
+						tailVisited[knots[t]] = void
 					}
 				}
 			}
 		}
 	}
 	return len(tailVisited)
-}
-
-func isNewTailPos(pos Position, visited []Position) bool {
-	for _, position := range visited {
-		if pos.x == position.x && pos.y == position.y {
-			return false
-		}
-	}
-	return true
 }
 
 func moveHead(pos Position, dir string) Position {

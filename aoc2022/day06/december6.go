@@ -1,4 +1,4 @@
-package day6
+package day06
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 )
 
 func Day6() {
-	content, _ := os.ReadFile("day6.txt")
+	content, _ := os.ReadFile("day06.txt")
 	day6Content := string(content)
 	unique(day6Content, 4)
 	unique(day6Content, 14)

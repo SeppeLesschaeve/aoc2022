@@ -1,4 +1,4 @@
-package day1
+package day01
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ type Elf struct {
 }
 
 func Day1() {
-	content, _ := os.ReadFile("day1.txt")
+	content, _ := os.ReadFile("day01.txt")
 	day1Content := string(content)
 	elvesData := strings.Split(day1Content, "\n\n")
 	var cals []Elf

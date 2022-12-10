@@ -1,4 +1,4 @@
-package day3
+package day03
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func Day3() {
-	content, err := os.ReadFile("day3.txt")
+	content, err := os.ReadFile("day03.txt")
 	if err != nil {
 		panic(err)
 	}

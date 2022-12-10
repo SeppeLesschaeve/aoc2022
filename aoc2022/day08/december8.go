@@ -1,4 +1,4 @@
-package day8
+package day08
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 func Day8() {
-	content, _ := os.ReadFile("day8.txt")
+	content, _ := os.ReadFile("day08.txt")
 	day8Content := string(content)
 	rows := strings.Split(day8Content, "\n")
 	treeHeights := make([][]int, len(rows))

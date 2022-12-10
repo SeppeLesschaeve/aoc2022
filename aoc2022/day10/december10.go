@@ -13,10 +13,11 @@ func Day10() {
 	lines := strings.Split(day10Content, "\n")
 	valuesOfX := getValues(lines)
 	firstPartSum := getCyclesSum(valuesOfX)
-	fmt.Println(valuesOfX)
 	fmt.Println(firstPartSum)
 	secondPartImage := getRendering(valuesOfX)
-	fmt.Println(secondPartImage)
+	for _, row := range secondPartImage {
+		fmt.Println(row)
+	}
 }
 
 func getValues(lines []string) []int {
@@ -36,30 +37,26 @@ func getValues(lines []string) []int {
 }
 
 func getCyclesSum(valuesOfX []int) interface{} {
-	cycles := []int{20,60,100,140,180,220}
+	cycles := []int{20, 60, 100, 140, 180, 220}
 	sum := 0
 	for _, cycle := range cycles {
-		sum += cycle  * valuesOfX[cycle - 1]
+		sum += cycle * valuesOfX[cycle-1]
 	}
 	return sum
 }
 
-func getRendering(valuesOfX []int) [][]string {
-	rendering := make([][]string, 6)
+func getRendering(valuesOfX []int) []string {
+	rendering := make([]string, 6)
 	var x int
 	for rowI, _ := range rendering {
-		var emptyRow []string
-		for i := 0; i < 40; i++ {
-			emptyRow = append(emptyRow, ".")
-		}
-		rendering[rowI] = emptyRow
+		rendering[rowI] = strings.Repeat(".", 40)
 	}
-	for i := 0 ; i < 240; i++ {
+	for i := 0; i < 240; i++ {
 		rowI := i / 40
 		colI := i % 40
 		x = valuesOfX[0]
 		if colI >= x-1 && colI <= x+1 {
-			rendering[rowI][colI] = "#"
+			rendering[rowI] = rendering[rowI][:colI] + "#" + rendering[rowI][colI+1:]
 		}
 		valuesOfX = valuesOfX[1:]
 	}

@@ -1,4 +1,4 @@
-package day04
+package src
 
 import (
 	"fmt"
@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-func Day4() {
-	content, _ := os.ReadFile("day04.txt")
+func Day04() {
+	content, _ := os.ReadFile("input/day04.txt")
 	day4Content := string(content)
 	elvesData := strings.Split(day4Content, "\n")
 	sumPart1 := 0

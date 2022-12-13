@@ -1,4 +1,4 @@
-package day10
+package src
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 func Day10() {
-	content, _ := os.ReadFile("day10.txt")
+	content, _ := os.ReadFile("input/day10.txt")
 	day10Content := string(content)
 	lines := strings.Split(day10Content, "\n")
 	valuesOfX := getValues(lines)

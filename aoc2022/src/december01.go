@@ -1,4 +1,4 @@
-package day01
+package src
 
 import (
 	"fmt"
@@ -8,13 +8,8 @@ import (
 	"strings"
 )
 
-type Elf struct {
-	Name string
-	Cal  int
-}
-
-func Day1() {
-	content, _ := os.ReadFile("day01.txt")
+func Day01() {
+	content, _ := os.ReadFile("input/day01.txt")
 	day1Content := string(content)
 	elvesData := strings.Split(day1Content, "\n\n")
 	var cals []Elf

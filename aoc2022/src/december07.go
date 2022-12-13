@@ -1,4 +1,4 @@
-package day07
+package src
 
 import (
 	"fmt"
@@ -7,20 +7,6 @@ import (
 	"strconv"
 	"strings"
 )
-
-type Entity interface {
-	GetSize() int
-}
-
-type File struct {
-	name string
-	Size int
-}
-
-type Directory struct {
-	name        string
-	subEntities []*Entity
-}
 
 func (file *File) GetSize() int {
 	return file.Size
@@ -34,8 +20,8 @@ func (dir *Directory) GetSize() int {
 	return sum
 }
 
-func Day7() {
-	content, _ := os.ReadFile("day07.txt")
+func Day07() {
+	content, _ := os.ReadFile("input/day07.txt")
 	day7Content := string(content)
 	lines := strings.Split(day7Content, "\n")
 	tree := constructTree(lines)
@@ -60,7 +46,7 @@ func (dir *Directory) getSizes() []int {
 	var sizes []int
 	sizes = append(sizes, dir.GetSize())
 	for _, entityStar := range dir.subEntities {
-		if reflect.TypeOf(*entityStar).String() == "*day07.Directory" {
+		if reflect.TypeOf(*entityStar).String() == "*src.Directory" {
 			sizes = append(sizes, (*entityStar).(*Directory).getSizes()...)
 		}
 	}
@@ -99,7 +85,7 @@ func constructTree(lines []string) Directory {
 
 func (dir *Directory) getIndexOfFirstDirAfterIndex(index int) int {
 	for i, entityStar := range dir.subEntities {
-		if reflect.TypeOf(*entityStar).String() == "*day07.Directory" && i > index {
+		if reflect.TypeOf(*entityStar).String() == "*src.Directory" && i > index {
 			return i
 		}
 	}

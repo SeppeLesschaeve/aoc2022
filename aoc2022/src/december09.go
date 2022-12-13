@@ -1,4 +1,4 @@
-package day09
+package src
 
 import (
 	"fmt"
@@ -7,21 +7,8 @@ import (
 	"strings"
 )
 
-type Void struct{}
-
-var void Void
-
-type Action struct {
-	direction string
-	distance  int
-}
-type Position struct {
-	x int
-	y int
-}
-
-func Day9() {
-	content, _ := os.ReadFile("day09.txt")
+func Day09() {
+	content, _ := os.ReadFile("input/day09.txt")
 	day9Content := string(content)
 	actions := getActions(day9Content)
 	firstPartKnots := []Position{{0, 0}, {0, 0}}
@@ -87,13 +74,5 @@ func newCoordinate(tailCoordinate int, headCoordinate int) int {
 		return tailCoordinate
 	} else {
 		return tailCoordinate - 1
-	}
-}
-
-func abs(i int) int {
-	if i >= 0 {
-		return i
-	} else {
-		return -i
 	}
 }

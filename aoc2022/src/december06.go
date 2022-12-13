@@ -1,12 +1,12 @@
-package day06
+package src
 
 import (
 	"fmt"
 	"os"
 )
 
-func Day6() {
-	content, _ := os.ReadFile("day06.txt")
+func Day06() {
+	content, _ := os.ReadFile("input/day06.txt")
 	day6Content := string(content)
 	unique(day6Content, 4)
 	unique(day6Content, 14)

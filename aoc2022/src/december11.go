@@ -1,4 +1,4 @@
-package day11
+package src
 
 import (
 	"fmt"
@@ -8,16 +8,8 @@ import (
 	"strings"
 )
 
-type Monkey struct {
-	items          []int
-	operation      func(int, int, *Monkey)
-	div            int
-	throwsTo       []int
-	amountOfThrows int
-}
-
 func Day11() {
-	content, _ := os.ReadFile("day11.txt")
+	content, _ := os.ReadFile("input/day11.txt")
 	day11Content := string(content)
 	monkeysSplit := strings.Split(day11Content, "\n\n")
 	monkeysPart1 := getMonkeys(monkeysSplit)

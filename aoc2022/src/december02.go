@@ -1,4 +1,4 @@
-package day02
+package src
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-func Day2() {
-	content, _ := os.ReadFile("day02.txt")
+func Day02() {
+	content, _ := os.ReadFile("input/day02.txt")
 	day2Content := string(content)
 	rounds := strings.Split(day2Content, "\n")
 	pointsPart1 := 0

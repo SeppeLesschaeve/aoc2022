@@ -1,4 +1,4 @@
-package day05
+package src
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-func Day5() {
-	content, _ := os.ReadFile("day05.txt")
+func Day05() {
+	content, _ := os.ReadFile("input/day05.txt")
 	day5Content := string(content)
 	configAndSteps := strings.Split(day5Content, "\n\n")
 	configPart1 := getConfig(configAndSteps[0])

@@ -1,4 +1,4 @@
-package day12
+package src
 
 import (
 	"fmt"
@@ -6,13 +6,8 @@ import (
 	"strings"
 )
 
-type Position struct {
-	x int
-	y int
-}
-
 func Day12() {
-	content, _ := os.ReadFile("day12.txt")
+	content, _ := os.ReadFile("input/day12.txt")
 	day12Content := string(content)
 	heightMap, start, end := getHeightMap(day12Content)
 
@@ -44,14 +39,6 @@ func Day12() {
 
 	fmt.Println(dist[start])
 	fmt.Println(dist[*shortest])
-}
-
-func abs(i int) int {
-	if i >= 0 {
-		return i
-	} else {
-		return -i
-	}
 }
 
 func getHamming(start Position, end Position) int {

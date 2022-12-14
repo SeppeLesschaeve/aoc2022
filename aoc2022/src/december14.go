@@ -58,24 +58,14 @@ func getBlockedPathPositions(positions []Position, blockPositions map[Position]b
 	for i := 0; i < len(positions)-1; i++ {
 		pos1 := positions[i]
 		pos2 := positions[i+1]
-		var from, to Position
-		if pos1.x == pos2.x {
-			from = Position{pos1.x, min(pos1.y, pos2.y)}
-			to = Position{pos1.x, max(pos1.y, pos2.y)}
-			for i := from.y; i <= to.y; i++ {
-				blockPositions[Position{pos1.x, i}] = true
+		from := Position{min(pos1.x, pos2.x), min(pos1.y, pos2.y)}
+		to := Position{max(pos1.x, pos2.x), max(pos1.y, pos2.y)}
+		for m := from.x; m <= to.x; m++ {
+			for n := from.y; n <= to.y; n++ {
+				blockPositions[Position{m, n}] = true
 			}
-			if pos1.x > maxDepth {
-				maxDepth = pos1.x
-			}
-		} else if pos1.y == pos2.y {
-			from = Position{min(pos1.x, pos2.x), pos1.y}
-			to = Position{max(pos1.x, pos2.x), pos1.y}
-			for i := from.x; i <= to.x; i++ {
-				blockPositions[Position{i, pos1.y}] = true
-				if i > maxDepth {
-					maxDepth = i
-				}
+			if m > maxDepth {
+				maxDepth = m
 			}
 		}
 	}
@@ -87,22 +77,8 @@ func simulateSand1(positions map[Position]bool, depth int) int {
 	var sandPos Position
 	for sandPos.x != depth+1 {
 		sandPos = Position{0, 500}
-		for !positions[sandPos] {
-			bottom := Position{sandPos.x + 1, sandPos.y}
-			bottomLeft := Position{sandPos.x + 1, sandPos.y - 1}
-			bottomRight := Position{sandPos.x + 1, sandPos.y + 1}
-			if !positions[bottom] {
-				sandPos = bottom
-			} else if !positions[bottomLeft] {
-				sandPos = bottomLeft
-			} else if !positions[bottomRight] {
-				sandPos = bottomRight
-			} else {
-				positions[sandPos] = true
-			}
-			if sandPos.x == depth+1 {
-				break
-			}
+		for !positions[sandPos] && sandPos.x != depth+1 {
+			sandPos, positions = updateSand(sandPos, positions)
 		}
 		if sandPos.x < depth+1 {
 			sand++
@@ -120,20 +96,25 @@ func simulateSand2(positions map[Position]bool, depth int, left int, right int) 
 	for !positions[Position{0, 500}] {
 		sandPos = Position{0, 500}
 		for !positions[sandPos] {
-			bottom := Position{sandPos.x + 1, sandPos.y}
-			bottomLeft := Position{sandPos.x + 1, sandPos.y - 1}
-			bottomRight := Position{sandPos.x + 1, sandPos.y + 1}
-			if !positions[bottom] {
-				sandPos = bottom
-			} else if !positions[bottomLeft] {
-				sandPos = bottomLeft
-			} else if !positions[bottomRight] {
-				sandPos = bottomRight
-			} else {
-				positions[sandPos] = true
-			}
+			sandPos, positions = updateSand(sandPos, positions)
 		}
 		sand++
 	}
 	return sand
+}
+
+func updateSand(sandPos Position, positions map[Position]bool) (Position, map[Position]bool) {
+	bottom := Position{sandPos.x + 1, sandPos.y}
+	bottomLeft := Position{sandPos.x + 1, sandPos.y - 1}
+	bottomRight := Position{sandPos.x + 1, sandPos.y + 1}
+	if !positions[bottom] {
+		sandPos = bottom
+	} else if !positions[bottomLeft] {
+		sandPos = bottomLeft
+	} else if !positions[bottomRight] {
+		sandPos = bottomRight
+	} else {
+		positions[sandPos] = true
+	}
+	return sandPos, positions
 }

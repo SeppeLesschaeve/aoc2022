@@ -32,6 +32,10 @@ type Position struct {
 	y int
 }
 
+func getHammingDistance(from Position, to Position) int {
+	return abs(to.x-from.x) + abs(to.y-from.y)
+}
+
 type Monkey struct {
 	items          []int
 	operation      func(int, int, *Monkey)

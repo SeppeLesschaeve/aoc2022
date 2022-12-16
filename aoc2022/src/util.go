@@ -32,6 +32,13 @@ type Position struct {
 	y int
 }
 
+type Valve struct {
+	name     string
+	rate     int
+	valvesTo map[string]Void
+	paths    map[string]int
+}
+
 func getHammingDistance(from Position, to Position) int {
 	return abs(to.x-from.x) + abs(to.y-from.y)
 }

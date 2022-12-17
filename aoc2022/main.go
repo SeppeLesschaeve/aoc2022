@@ -7,6 +7,6 @@ import (
 
 func main() {
 
-	fmt.Println("December 16")
-	src.Day16()
+	fmt.Println("December 17")
+	src.Day17()
 }

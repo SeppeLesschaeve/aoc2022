@@ -57,6 +57,12 @@ type Packet struct {
 	root     *Packet
 }
 
+type CaveState struct {
+	blockIndex int
+	shape      []Position
+	diffHeight []int
+}
+
 func abs(i int) int {
 	if i >= 0 {
 		return i

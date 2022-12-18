@@ -63,6 +63,18 @@ type CaveState struct {
 	diffHeight []int
 }
 
+type Cube struct {
+	x int
+	y int
+	z int
+}
+
+type CubeState struct {
+	cubes            map[Cube]bool
+	surfaceArea      int
+	minCube, maxCube Cube
+}
+
 func abs(i int) int {
 	if i >= 0 {
 		return i

@@ -8,66 +8,79 @@ import (
 
 func Day17() {
 	content, _ := os.ReadFile("input/day17.txt")
-	pattern := string(content)
+	day17Content := string(content)
 	shapes := initializeShapes()
-	landing1 := initializeLanding()
-	height1 := getHeight(landing1)
+	part1(day17Content, shapes)
+	part2(day17Content, shapes)
+}
+
+func part1(jets string, shapes [5][]Position) {
+	landing := initializeLanding()
+	height := 0
 	for i, jetIndex := 0, 0; i < 2022; i++ {
-		shape := getInitialShape(shapes[i%5], height1+4)
-		jetIndex = chamberAfterShape(pattern, jetIndex, shape, landing1)
-		height1 = getHeight(landing1)
+		shape := getInitialShape(shapes[i%5], height+4)
+		for true {
+			if canBePushed(shape, rune(jets[jetIndex]), landing) {
+				shape = updateShapeAfterPush(shape, rune(jets[jetIndex]))
+			}
+			jetIndex = (jetIndex + 1) % len(jets)
+			if !canFall(shape, landing) {
+				break
+			}
+			shape = updateShapeAfterFall(shape)
+		}
+		updateLanding(shape, landing)
+		height = getHeight(height, shape)
 	}
-	fmt.Println(height1)
+	fmt.Println(height)
+}
+
+func part2(jets string, shapes [5][]Position) {
 	var hash string
 	var hashes []string
-	i := 0
-	amountsLanded := 0
-	landing2 := initializeLanding()
-	height2 := getHeight(landing2)
-	shape := getInitialShape(shapes[0], height2+4)
+	i, amountsLanded, currentShape, height := 0, 0, 0, 0
+	landing := initializeLanding()
+	shape := getInitialShape(shapes[0], height+4)
 	hashVals := make(map[string][]int)
 	for true {
-		hash = getHash(landing2, height2, i)
+		hash = getHash(landing, height, i)
 		if contains(hashes, hash) {
 			break
 		}
 		hashes = append(hashes, hash)
-		hashVals[hash] = []int{amountsLanded, height2}
-		if canBePushed(shape, rune(pattern[i]), landing2) {
-			shape = updateShapeAfterPush(shape, rune(pattern[i]))
-		}
-		i = (i + 1) % len(pattern)
-		if canFall(shape, landing2) {
-			shape = updateShapeAfterFall(shape)
-		} else {
-			updateLanding(shape, landing2)
-			height2 = getHeight(landing2)
-			amountsLanded += 1
-			shape = getInitialShape(shapes[amountsLanded%5], height2+4)
-		}
+		hashVals[hash] = []int{amountsLanded, height}
+		shape, i, height, amountsLanded, currentShape =
+			move(shape, i, height, amountsLanded, currentShape, jets, shapes, landing)
 	}
 	rocksPerCycle := amountsLanded - hashVals[hash][0]
-	heightPerCycle := height2 - hashVals[hash][1]
+	heightPerCycle := height - hashVals[hash][1]
 	rocks := 1000000000000
 	amountOfCycles := (rocks - amountsLanded) / rocksPerCycle
 	rocksLeft := rocks - amountsLanded - rocksPerCycle*amountOfCycles
-
 	amountsLanded = 0
 	for amountsLanded < rocksLeft {
-		if canBePushed(shape, rune(pattern[i]), landing2) {
-			shape = updateShapeAfterPush(shape, rune(pattern[i]))
-		}
-		i = (i + 1) % len(pattern)
-		if canFall(shape, landing2) {
-			shape = updateShapeAfterFall(shape)
-		} else {
-			updateLanding(shape, landing2)
-			height2 = getHeight(landing2)
-			amountsLanded += 1
-			shape = getInitialShape(shapes[amountsLanded%5], height2+4)
-		}
+		shape, i, height, amountsLanded, currentShape =
+			move(shape, i, height, amountsLanded, currentShape, jets, shapes, landing)
 	}
-	fmt.Println(height2 + heightPerCycle*amountOfCycles)
+	fmt.Println(height + heightPerCycle*amountOfCycles)
+}
+
+func move(shape []Position, i int, height int, amountsLanded int, currentShape int,
+	pattern string, shapes [5][]Position, landing map[Position]bool) ([]Position, int, int, int, int) {
+	if canBePushed(shape, rune(pattern[i]), landing) {
+		shape = updateShapeAfterPush(shape, rune(pattern[i]))
+	}
+	i = (i + 1) % len(pattern)
+	if canFall(shape, landing) {
+		shape = updateShapeAfterFall(shape)
+	} else {
+		updateLanding(shape, landing)
+		height = getHeight(height, shape)
+		amountsLanded += 1
+		currentShape += 1
+		shape = getInitialShape(shapes[currentShape%5], height+4)
+	}
+	return shape, i, height, amountsLanded, currentShape
 }
 
 func getHash(landing map[Position]bool, height int, i int) string {
@@ -86,39 +99,18 @@ func getHash(landing map[Position]bool, height int, i int) string {
 		}
 		diffHeight = append(diffHeight, minimumOfCol)
 	}
-	hash := strconv.Itoa(i)
-	hash += strconv.Itoa(i % 5)
+	hash := strconv.Itoa(i) + strconv.Itoa(i%5)
 	for _, diff := range diffHeight {
 		hash += strconv.Itoa(diff)
 	}
 	return hash
 }
 
-func getHeight(landing map[Position]bool) int {
-	height := 0
-	for position, _ := range landing {
-		if position.x > height {
-			height = position.x
-		}
+func getHeight(height int, shape []Position) int {
+	for _, position := range shape {
+		height = max(height, position.x)
 	}
 	return height
-}
-
-func chamberAfterShape(jet string, index int, shape []Position, landing map[Position]bool) int {
-	newIndex := index
-	for true {
-		if canBePushed(shape, rune(jet[newIndex]), landing) {
-			shape = updateShapeAfterPush(shape, rune(jet[newIndex]))
-		}
-		newIndex = (newIndex + 1) % len(jet)
-		if canFall(shape, landing) {
-			shape = updateShapeAfterFall(shape)
-		} else {
-			break
-		}
-	}
-	updateLanding(shape, landing)
-	return newIndex
 }
 
 func updateLanding(shape []Position, landing map[Position]bool) {
@@ -132,7 +124,8 @@ func canBePushed(shape []Position, dir rune, landing map[Position]bool) bool {
 		if (dir == '<' && position.y == 0) || (dir == '>' && position.y == 6) {
 			return false
 		}
-		if (dir == '<' && landing[Position{position.x, position.y - 1}]) || (dir == '>' && landing[Position{position.x, position.y + 1}]) {
+		if (dir == '<' && landing[Position{position.x, position.y - 1}]) ||
+			(dir == '>' && landing[Position{position.x, position.y + 1}]) {
 			return false
 		}
 	}
@@ -153,8 +146,7 @@ func updateShapeAfterPush(shape []Position, dir rune) []Position {
 
 func canFall(shape []Position, landing map[Position]bool) bool {
 	for _, position := range shape {
-		fallPosition := Position{position.x - 1, position.y}
-		if landing[fallPosition] {
+		if landing[Position{position.x - 1, position.y}] {
 			return false
 		}
 	}

@@ -75,6 +75,21 @@ type CubeState struct {
 	minCube, maxCube Cube
 }
 
+type BluePrint struct {
+	id       int
+	ore      int
+	clay     int
+	obsidian []int
+	geode    []int
+}
+
+type MineState struct {
+	minutes   int
+	robots    []int
+	inventory []int
+	mined     []int
+}
+
 func abs(i int) int {
 	if i >= 0 {
 		return i

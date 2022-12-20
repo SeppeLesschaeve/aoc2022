@@ -90,6 +90,11 @@ type MineState struct {
 	mined     []int
 }
 
+type groveCoordinate struct {
+	coordinate     int
+	next, previous *groveCoordinate
+}
+
 func abs(i int) int {
 	if i >= 0 {
 		return i

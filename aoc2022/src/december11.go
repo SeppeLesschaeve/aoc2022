@@ -14,14 +14,14 @@ func Day11() {
 	monkeysSplit := strings.Split(day11Content, "\n\n")
 	monkeysPart1 := getMonkeys(monkeysSplit)
 	monkeysPart2 := getMonkeys(monkeysSplit)
-	monkeysPart1 = simulateRounds(monkeysPart1, 20, func(i int, monkey *Monkey) { monkey.items[i] /= 3 })
+	monkeysPart1 = simulateRounds(monkeysPart1, 20, func(i int, monkey *ThrowingMonkey) { monkey.items[i] /= 3 })
 	biggest := getBiggest(monkeysPart2)
-	monkeysPart2 = simulateRounds(monkeysPart2, 10000, func(i int, monkey *Monkey) { monkey.items[i] %= biggest })
+	monkeysPart2 = simulateRounds(monkeysPart2, 10000, func(i int, monkey *ThrowingMonkey) { monkey.items[i] %= biggest })
 	fmt.Println(getMonkeyBusiness(monkeysPart1))
 	fmt.Println(getMonkeyBusiness(monkeysPart2))
 }
 
-func simulateRounds(monkeys []*Monkey, rounds int, trust func(int, *Monkey)) []*Monkey {
+func simulateRounds(monkeys []*ThrowingMonkey, rounds int, trust func(int, *ThrowingMonkey)) []*ThrowingMonkey {
 	for round := 0; round < rounds; round++ {
 		for _, monkey := range monkeys {
 			for itemInd, item := range monkey.items {
@@ -40,7 +40,7 @@ func simulateRounds(monkeys []*Monkey, rounds int, trust func(int, *Monkey)) []*
 	return monkeys
 }
 
-func getBiggest(monkeys []*Monkey) int {
+func getBiggest(monkeys []*ThrowingMonkey) int {
 	biggest := 1
 	for _, monkey := range monkeys {
 		biggest *= monkey.div
@@ -48,8 +48,8 @@ func getBiggest(monkeys []*Monkey) int {
 	return biggest
 }
 
-func getMonkeys(monkeysSplit []string) []*Monkey {
-	var monkeys []*Monkey
+func getMonkeys(monkeysSplit []string) []*ThrowingMonkey {
+	var monkeys []*ThrowingMonkey
 	for _, monkeySplit := range monkeysSplit {
 		monkeyInfo := strings.Split(monkeySplit, "\n")
 		var items []int
@@ -67,11 +67,11 @@ func getMonkeys(monkeysSplit []string) []*Monkey {
 			items = append(items, itemInt)
 		}
 		if op == "*" {
-			monkeys = append(monkeys, &Monkey{items, func(item int, itemInd int, monkey *Monkey) {
+			monkeys = append(monkeys, &ThrowingMonkey{items, func(item int, itemInd int, monkey *ThrowingMonkey) {
 				monkey.items[itemInd] = item * getAmount(a, item)
 			}, div, []int{trueMonkey, falseMonkey}, 0})
 		} else if op == "+" {
-			monkeys = append(monkeys, &Monkey{items, func(item int, itemInd int, monkey *Monkey) {
+			monkeys = append(monkeys, &ThrowingMonkey{items, func(item int, itemInd int, monkey *ThrowingMonkey) {
 				monkey.items[itemInd] = item + getAmount(a, item)
 			}, div, []int{trueMonkey, falseMonkey}, 0})
 		}
@@ -87,7 +87,7 @@ func getAmount(a string, item int) int {
 	return item
 }
 
-func getMonkeyBusiness(monkeys []*Monkey) int {
+func getMonkeyBusiness(monkeys []*ThrowingMonkey) int {
 	sort.Slice(monkeys, func(p, q int) bool { return monkeys[p].amountOfThrows > monkeys[q].amountOfThrows })
 	return monkeys[0].amountOfThrows * monkeys[1].amountOfThrows
 }

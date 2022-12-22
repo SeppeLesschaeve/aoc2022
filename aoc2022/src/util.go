@@ -43,9 +43,9 @@ func getHammingDistance(from Position, to Position) int {
 	return abs(to.x-from.x) + abs(to.y-from.y)
 }
 
-type Monkey struct {
+type ThrowingMonkey struct {
 	items          []int
-	operation      func(int, int, *Monkey)
+	operation      func(int, int, *ThrowingMonkey)
 	div            int
 	throwsTo       []int
 	amountOfThrows int
@@ -93,6 +93,15 @@ type MineState struct {
 type groveCoordinate struct {
 	coordinate     int
 	next, previous *groveCoordinate
+}
+
+type Monkeys map[string]YellingMonkey
+type YellingMonkey struct {
+	name      string
+	value     int
+	operation string
+	left      string
+	right     string
 }
 
 func abs(i int) int {

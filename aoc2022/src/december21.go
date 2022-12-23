@@ -88,19 +88,17 @@ func getYellingMonkeys(content string) Monkeys {
 
 func (monkeys *Monkeys) Resolve(name string) int {
 	monkey := (*monkeys)[name]
-	// Monkey has a number
 	if monkey.value != math.MinInt {
 		return monkey.value
 	}
-	// Calculate this monkey's number and cache/return it
 	switch monkey.operation {
-	case "+": // result = op1 + op2
+	case "+":
 		monkey.value = monkeys.Resolve(monkey.left) + monkeys.Resolve(monkey.right)
-	case "-": // result = op1 - op2
+	case "-":
 		monkey.value = monkeys.Resolve(monkey.left) - monkeys.Resolve(monkey.right)
-	case "*": // result = op1 * op2
+	case "*":
 		monkey.value = monkeys.Resolve(monkey.left) * monkeys.Resolve(monkey.right)
-	case "/": // result = op1 / op2
+	case "/":
 		monkey.value = monkeys.Resolve(monkey.left) / monkeys.Resolve(monkey.right)
 	}
 	monkey.operation = ""
@@ -108,52 +106,42 @@ func (monkeys *Monkeys) Resolve(name string) int {
 }
 
 func (monkeys *Monkeys) ResolveReversed(name string) int {
-	// Find the monkey waiting for the given name/monkey
 	for monkeyName, yellingMonkey := range *monkeys {
-		// Skip non-computed monkeys
 		if yellingMonkey.value != math.MinInt {
 			continue
 		}
 		if yellingMonkey.left == name {
-			// Solve the second operand the regular way
 			other := monkeys.Resolve(yellingMonkey.right)
 			if monkeyName == "root" {
-				// This is root, so first operand is the same
 				return other
 			} else {
-				// Get the expected result for this monkey
 				result := monkeys.ResolveReversed(monkeyName)
-				// Reverse the operation and return the first operand
 				switch yellingMonkey.operation {
-				case "+": // result = x + other
+				case "+":
 					return result - other
-				case "-": // result = x - other
+				case "-":
 					return result + other
-				case "*": // result = x * other
+				case "*":
 					return result / other
-				case "/": // result = x / other
+				case "/":
 					return result * other
 				}
 			}
 			break
 		} else if yellingMonkey.right == name {
-			// Solve the first operand the regular way
 			other := monkeys.Resolve(yellingMonkey.left)
 			if monkeyName == "root" {
-				// This is root, so second operand is the same
 				return other
 			} else {
-				// Get the expected result for this monkey
 				result := monkeys.ResolveReversed(monkeyName)
-				// Reverse the operation and return the second operand
 				switch yellingMonkey.operation {
-				case "+": // result = x + other
+				case "+":
 					return result - other
-				case "-": // result = x - other
+				case "-":
 					return result + other
-				case "*": // result = x * other
+				case "*":
 					return result / other
-				case "/": // result = x / other
+				case "/":
 					return result * other
 				}
 			}
